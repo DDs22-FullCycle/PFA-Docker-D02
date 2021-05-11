@@ -43,8 +43,10 @@ services:
       - "3306:3306"
     expose: 
       - "3306"
+    #COPY /sql/seed.sql .
     volumes: 
       - ./dbdata:/var/lib/mysql
+      - ./sql:/docker-entrypoint-initdb.d/ 
       
 
 networks: 
