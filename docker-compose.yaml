@@ -1,0 +1,55 @@
+version: '3'
+
+services: 
+  nginx:
+    labels: 
+      - fcpfa
+    image: dds22/public:nginx-pfa02
+    container_name: nginx-container
+    networks: 
+      - pfa_net_02
+    ports: 
+      - "8000:8000"
+    expose: 
+      - "8000"
+    restart: always
+    depends_on: 
+      - node
+
+  node:
+    labels: 
+      - fcpfa
+    image: dds22/public:node-pfa02
+    container_name: node-container
+    networks: 
+      - pfa_net_01
+      - pfa_net_02
+    ports: 
+      - "3000:3000"
+    entrypoint: dockerize -wait tcp://mysql-container:3306 -timeout 60s
+    command: npm start
+
+  mysql:
+    labels: 
+      - fcpfa
+    image: mysql:5.7
+    container_name: mysql-container
+    environment: 
+      - MYSQL_DATABASE=modulos 
+      - MYSQL_ROOT_PASSWORD=root
+    networks: 
+      - pfa_net_01
+    ports: 
+      - "3306:3306"
+    expose: 
+      - "3306"
+    volumes: 
+      - ./dbdata:/var/lib/mysql
+      
+
+networks: 
+  pfa_net_01:
+  pfa_net_02:
+
+volumes: 
+  dbdata:
